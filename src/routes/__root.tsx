@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -77,9 +78,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AgriMarket Bayelsa" },
-      { name: "description", content: "Fresh local food, delivered across Bayelsa." },
-      { name: "author", content: "AgriMarket Bayelsa" },
+       { title: "CyberAgris | Bayelsa's farmer marketplace" },
+       { name: "description", content: "Buy fresh food from Bayelsa farmers or join CyberAgris to sell your harvest directly to customers." },
+       { name: "author", content: "CyberAgris" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
