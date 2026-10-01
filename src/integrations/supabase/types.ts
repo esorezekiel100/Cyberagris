@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      farmer_balances: {
+        Row: {
+          balance: number
+          farmer_id: string
+          total_earned: number
+          updated_at: string
+        }
+        Insert: {
+          balance?: number
+          farmer_id: string
+          total_earned?: number
+          updated_at?: string
+        }
+        Update: {
+          balance?: number
+          farmer_id?: string
+          total_earned?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string
+          buyer_id: string
+          created_at: string
+          farmer_id: string
+          id: string
+          order_id: string | null
+          product_id: string | null
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          buyer_id: string
+          created_at?: string
+          farmer_id: string
+          id?: string
+          order_id?: string | null
+          product_id?: string | null
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          buyer_id?: string
+          created_at?: string
+          farmer_id?: string
+          id?: string
+          order_id?: string | null
+          product_id?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           buyer_id: string
@@ -54,6 +123,47 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          buyer_id: string
+          farmer_id: string
+          id: string
+          order_id: string
+          paid_at: string
+          payment_reference: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          buyer_id: string
+          farmer_id: string
+          id?: string
+          order_id: string
+          paid_at?: string
+          payment_reference: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          buyer_id?: string
+          farmer_id?: string
+          id?: string
+          order_id?: string
+          paid_at?: string
+          payment_reference?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]
@@ -174,6 +284,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      pay_for_order: {
+        Args: { _order_id: string; _payment_reference: string }
+        Returns: Json
       }
     }
     Enums: {
