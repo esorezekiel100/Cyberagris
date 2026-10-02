@@ -17,6 +17,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function DashboardPage() {
   const navigate = useNavigate();
   const [role, setRole] = useState<string>();
+  const [currentUserId, setCurrentUserId] = useState("");
   const [name, setName] = useState("there");
   const [products, setProducts] = useState<Tables<"products">[]>([]);
   const [orders, setOrders] = useState<Tables<"orders">[]>([]);
@@ -31,6 +32,7 @@ function DashboardPage() {
     async function load() {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) return;
+      setCurrentUserId(auth.user.id);
       const [{ data: profile }, { data: roleRow }] = await Promise.all([supabase.from("profiles").select("full_name").eq("id", auth.user.id).maybeSingle(), supabase.from("user_roles").select("role").eq("user_id", auth.user.id).maybeSingle()]);
       setName(profile?.full_name || auth.user.email?.split("@")[0] || "there");
       setRole(roleRow?.role);
