@@ -17,6 +17,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function DashboardPage() {
   const navigate = useNavigate();
   const [role, setRole] = useState<string>();
+  const [loaded, setLoaded] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
   const [name, setName] = useState("there");
   const [products, setProducts] = useState<Tables<"products">[]>([]);
@@ -49,6 +50,7 @@ function DashboardPage() {
         const { data: marketProducts } = await supabase.from("products").select("*").eq("status", "active").order("created_at", { ascending: false });
         setProducts(marketProducts ?? []);
       }
+      setLoaded(true);
     }
     load();
   }, []);
