@@ -83,12 +83,53 @@ export type Database = {
           },
         ]
       }
+      order_tracking_events: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          note: string | null
+          order_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          note?: string | null
+          order_id: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          note?: string | null
+          order_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_tracking_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           buyer_id: string
+          courier_name: string | null
+          courier_phone: string | null
           created_at: string
           delivery_address: string
+          delivery_method: string
+          estimated_delivery: string | null
           farmer_id: string
+          fulfillment_status: string
+          fulfillment_updated_at: string
           id: string
           product_id: string
           quantity: number
@@ -97,9 +138,15 @@ export type Database = {
         }
         Insert: {
           buyer_id: string
+          courier_name?: string | null
+          courier_phone?: string | null
           created_at?: string
           delivery_address: string
+          delivery_method?: string
+          estimated_delivery?: string | null
           farmer_id: string
+          fulfillment_status?: string
+          fulfillment_updated_at?: string
           id?: string
           product_id: string
           quantity?: number
@@ -108,9 +155,15 @@ export type Database = {
         }
         Update: {
           buyer_id?: string
+          courier_name?: string | null
+          courier_phone?: string | null
           created_at?: string
           delivery_address?: string
+          delivery_method?: string
+          estimated_delivery?: string | null
           farmer_id?: string
+          fulfillment_status?: string
+          fulfillment_updated_at?: string
           id?: string
           product_id?: string
           quantity?: number
@@ -288,6 +341,18 @@ export type Database = {
       pay_for_order: {
         Args: { _order_id: string; _payment_reference: string }
         Returns: Json
+      }
+      update_order_fulfillment: {
+        Args: {
+          _courier_name?: string
+          _courier_phone?: string
+          _delivery_method?: string
+          _estimated_delivery?: string
+          _note?: string
+          _order_id: string
+          _status: string
+        }
+        Returns: undefined
       }
     }
     Enums: {

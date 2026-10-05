@@ -15,6 +15,13 @@
       "when": 1790842582321,
       "tag": "0001_add_order_payments_and_market_messages",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791190595638,
+      "tag": "0002_add_order_delivery_tracking",
+      "breakpoints": true
     }
   ]
 }
