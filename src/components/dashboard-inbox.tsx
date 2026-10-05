@@ -67,7 +67,7 @@ export function DashboardInbox({ role, userId, orders, products }: InboxProps) {
 
     for (const item of messages) {
       const otherId = role === "farmer" ? item.buyer_id : item.farmer_id;
-      const key = `${otherId}:${item.product_id ?? "product"}:${item.order_id ?? "inquiry"}`;
+      const key = item.order_id ? `${otherId}:order:${item.order_id}` : `${otherId}:${item.product_id ?? "product"}:inquiry`;
       addContext({
         key,
         buyerId: item.buyer_id,

@@ -35,8 +35,11 @@ function JoinMarketPage() {
     setBusy(true); setError("");
     const profile = await supabase.from("profiles").upsert({ id: userId, full_name: fullName, phone: phone || null, location: location || null }).select().single();
     if (profile.error) { setError(profile.error.message); setBusy(false); return; }
-    const roleResult = await supabase.from("user_roles").insert({ user_id: userId, role });
-    if (roleResult.error && !roleResult.error.message.toLowerCase().includes("duplicate")) { setError(roleResult.error.message); setBusy(false); return; }
+    const { data: existingRole } = await supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle();
+    if (!existingRole) {
+      const roleResult = await supabase.from("user_roles").insert({ user_id: userId, role });
+      if (roleResult.error) { setError(roleResult.error.message); setBusy(false); return; }
+    }
     await navigate({ to: "/dashboard" });
   }
 
