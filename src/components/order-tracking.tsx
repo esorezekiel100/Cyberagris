@@ -78,14 +78,13 @@ function TrackingCard({ role, order, productName, events, onUpdated }: { role: "
 
   async function update(status: string) {
     setBusy(true); setError("");
-    const rpcArgs: Record<string, string> = {
+    const { error: rpcError } = await supabase.rpc("update_order_fulfillment", {
       _order_id: order.id, _status: status, _delivery_method: method,
-    };
-    if (note) rpcArgs._note = note;
-    if (courierName) rpcArgs._courier_name = courierName;
-    if (courierPhone) rpcArgs._courier_phone = courierPhone;
-    if (eta) rpcArgs._estimated_delivery = eta;
-    const { error: rpcError } = await supabase.rpc("update_order_fulfillment", rpcArgs);
+      ...(note ? { _note: note } : {}),
+      ...(courierName ? { _courier_name: courierName } : {}),
+      ...(courierPhone ? { _courier_phone: courierPhone } : {}),
+      ...(eta ? { _estimated_delivery: eta } : {}),
+    });
     if (rpcError) { setError(rpcError.message); setBusy(false); return; }
     const { data } = await supabase.from("orders").select("*").eq("id", order.id).single();
     if (data) await onUpdated(data);
