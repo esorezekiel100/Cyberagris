@@ -57,7 +57,7 @@ export function OrderTracking({ role, orders, productNames, onOrderUpdated }: Pr
       ) : (
         <div className="mt-6 space-y-5">
           {paidOrders.map((order) => (
-            <TrackingCard key={order.id} role={role} order={order} productName={productNames[order.product_id]} events={events.filter((event) => event.order_id === order.id)} onUpdated={async (updated) => { onOrderUpdated(updated); await loadEvents(); }} />
+            <TrackingCard key={order.id} role={role} order={order} productName={productNames[order.product_id] ?? "Order"} events={events.filter((event) => event.order_id === order.id)} onUpdated={async (updated) => { onOrderUpdated(updated); await loadEvents(); }} />
           ))}
         </div>
       )}
@@ -78,10 +78,14 @@ function TrackingCard({ role, order, productName, events, onUpdated }: { role: "
 
   async function update(status: string) {
     setBusy(true); setError("");
-    const { error: rpcError } = await supabase.rpc("update_order_fulfillment", {
-      _order_id: order.id, _status: status, _note: note || undefined, _delivery_method: method,
-      _courier_name: courierName || undefined, _courier_phone: courierPhone || undefined, _estimated_delivery: eta || undefined,
-    });
+    const rpcArgs: Record<string, string> = {
+      _order_id: order.id, _status: status, _delivery_method: method,
+    };
+    if (note) rpcArgs._note = note;
+    if (courierName) rpcArgs._courier_name = courierName;
+    if (courierPhone) rpcArgs._courier_phone = courierPhone;
+    if (eta) rpcArgs._estimated_delivery = eta;
+    const { error: rpcError } = await supabase.rpc("update_order_fulfillment", rpcArgs);
     if (rpcError) { setError(rpcError.message); setBusy(false); return; }
     const { data } = await supabase.from("orders").select("*").eq("id", order.id).single();
     if (data) await onUpdated(data);
