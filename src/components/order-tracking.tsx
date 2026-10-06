@@ -57,7 +57,7 @@ export function OrderTracking({ role, orders, productNames, onOrderUpdated }: Pr
       ) : (
         <div className="mt-6 space-y-5">
           {paidOrders.map((order) => (
-            <TrackingCard key={order.id} role={role} order={order} productName={productNames[order.product_id]} events={events.filter((event) => event.order_id === order.id)} onUpdated={async (updated) => { onOrderUpdated(updated); await loadEvents(); }} />
+            <TrackingCard key={order.id} role={role} order={order} productName={productNames[order.product_id] ?? "Order"} events={events.filter((event) => event.order_id === order.id)} onUpdated={async (updated) => { onOrderUpdated(updated); await loadEvents(); }} />
           ))}
         </div>
       )}
@@ -79,8 +79,11 @@ function TrackingCard({ role, order, productName, events, onUpdated }: { role: "
   async function update(status: string) {
     setBusy(true); setError("");
     const { error: rpcError } = await supabase.rpc("update_order_fulfillment", {
-      _order_id: order.id, _status: status, _note: note || undefined, _delivery_method: method,
-      _courier_name: courierName || undefined, _courier_phone: courierPhone || undefined, _estimated_delivery: eta || undefined,
+      _order_id: order.id, _status: status, _delivery_method: method,
+      ...(note ? { _note: note } : {}),
+      ...(courierName ? { _courier_name: courierName } : {}),
+      ...(courierPhone ? { _courier_phone: courierPhone } : {}),
+      ...(eta ? { _estimated_delivery: eta } : {}),
     });
     if (rpcError) { setError(rpcError.message); setBusy(false); return; }
     const { data } = await supabase.from("orders").select("*").eq("id", order.id).single();
